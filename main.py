@@ -1,13 +1,13 @@
+"""Local entrypoint: python main.py"""
+import os
+
 import uvicorn
-from fastapi import FastAPI
 
-app = FastAPI()
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
+from scheduler.app import create_app
+from scheduler.config import SchedulerConfig
+from scheduler.logging_setup import configure_logging
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=0)
+    configure_logging(os.environ.get("SCHEDULER_LOG_LEVEL", "INFO"))
+    config = SchedulerConfig.from_env()
+    uvicorn.run(create_app(config), host="127.0.0.1", port=8000)
